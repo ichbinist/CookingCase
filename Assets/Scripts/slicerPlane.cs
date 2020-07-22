@@ -5,7 +5,6 @@ using EzySlice;
 
 public class slicerPlane : MonoBehaviour
 {
-    public Material mat;
     public LayerMask mask;
 
     public void OnDrawGizmos(){
@@ -22,12 +21,13 @@ public class slicerPlane : MonoBehaviour
           Collider[] kesilecekNesneler = Physics.OverlapBox(transform.position, new Vector3(1f,0f,.1f), transform.rotation, mask);
 
           foreach(Collider nesne in kesilecekNesneler){
-            SlicedHull kesilenNesne = Kes(nesne.GetComponent<Collider>().gameObject,mat);
-            GameObject kesilmisUst = kesilenNesne.CreateUpperHull(nesne.gameObject,mat);
-            GameObject kesilmisAlt = kesilenNesne.CreateLowerHull(nesne.gameObject,mat);
+            Material previousMat = nesne.GetComponent<MaterialHolder>().InnerMaterial;
+            SlicedHull kesilenNesne = Kes(nesne.GetComponent<Collider>().gameObject,previousMat);
+            GameObject kesilmisUst = kesilenNesne.CreateUpperHull(nesne.gameObject,previousMat);
+            GameObject kesilmisAlt = kesilenNesne.CreateLowerHull(nesne.gameObject,previousMat);
 
-            BilesenEkle(kesilmisUst);
-            BilesenEkle(kesilmisAlt);
+            BilesenEkle(kesilmisUst,previousMat);
+            BilesenEkle(kesilmisAlt,previousMat);
 
             Destroy(nesne.gameObject);
           }
@@ -38,10 +38,12 @@ public class slicerPlane : MonoBehaviour
       return obj.Slice(transform.position, transform.up, mat);
     }
 
-    void BilesenEkle(GameObject obj){
+    void BilesenEkle(GameObject obj, Material _mat){
 
       obj.AddComponent<MeshCollider>().convex = true;
       obj.AddComponent<Rigidbody>();
+      obj.AddComponent<MaterialHolder>();
+      obj.GetComponent<MaterialHolder>().InnerMaterial = _mat;
       obj.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
       obj.GetComponent<Rigidbody>().AddExplosionForce(100,obj.transform.position,20);
       obj.layer = 8;
