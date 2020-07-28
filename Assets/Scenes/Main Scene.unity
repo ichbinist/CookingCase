@@ -1292,8 +1292,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 672831674}
-  min: 0
-  max: 1
+  min: 0.5
+  max: 0.9
   ingredients: []
   GameController: {fileID: 1917531271}
 --- !u!114 &854093192
